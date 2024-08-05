@@ -30,6 +30,7 @@ int main(int argc, char const *argv[])
 			cb();
 		}
 
+		std::cout<<"one to five cbs have been expired"<<std::endl;
 		sleep(5);
 		manager->listExpiredCb(cbs);
 		while(!cbs.empty())
@@ -37,21 +38,24 @@ int main(int argc, char const *argv[])
 			std::function<void()> cb = *cbs.begin();
 			cbs.erase(cbs.begin());
 			cb();
-		}			
+		}
+		std::cout<<"six to ten cbs have been expired"<<std::endl;			
 	}
 		
 	// 测试recurring
 	{
 		manager->addTimer(1000, std::bind(&func, 1000), true);
+		manager->addTimer(2000,std::bind(&func,2000),true);
 		int j = 10;
 		while(j-->0)
 		{
-			sleep(1);
+			sleep(2);
 			manager->listExpiredCb(cbs);
-			std::function<void()> cb = *cbs.begin();
-			cbs.erase(cbs.begin());
-			cb();
-			
+			while(!cbs.empty()){
+				std::function<void()> cb = *cbs.begin();
+				cbs.erase(cbs.begin());
+				cb();	
+			}
 		}		
 	}
 	return 0;
